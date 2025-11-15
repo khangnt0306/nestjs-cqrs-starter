@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeOrmConfigService } from './infrastructure/database/typeorm-config.service';
 import { UsersModule } from './presentation/users/users.module';
 import { AuthModule } from './presentation/auth/auth.module';
+import { PostsModule } from './presentation/post/posts.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { AuthModule } from './presentation/auth/auth.module';
     // Feature modules
     AuthModule,
     UsersModule,
+    PostsModule,
   ],
 })
 export class AppModule {}

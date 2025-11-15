@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, Global } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { ConfigService } from '@nestjs/config';
@@ -8,9 +8,17 @@ import { AuthService } from './auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { UserRepository } from '@infrastructure/repositories';
 
+// Guards
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { OwnerGuard } from './guards/owner.guard';
+import { ResourceOwnerGuard } from './guards/resource-owner.guard';
+import { OwnershipGuard } from './guards/ownership.guard';
+import { RolesGuard } from './guards/roles.guard';
+
 // Import handlers
 import { CreateUserHandler } from '@application/commands/users';
 
+@Global()
 @Module({
   imports: [
     PassportModule,
@@ -26,7 +34,26 @@ import { CreateUserHandler } from '@application/commands/users';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, UserRepository, CreateUserHandler],
-  exports: [AuthService],
+  providers: [
+    AuthService,
+    JwtStrategy,
+    UserRepository,
+    CreateUserHandler,
+    // Export guards để sử dụng global
+    JwtAuthGuard,
+    OwnerGuard,
+    ResourceOwnerGuard,
+    OwnershipGuard,
+    RolesGuard,
+  ],
+  exports: [
+    AuthService,
+    // Export guards để các module khác có thể sử dụng
+    JwtAuthGuard,
+    OwnerGuard,
+    ResourceOwnerGuard,
+    OwnershipGuard,
+    RolesGuard,
+  ],
 })
 export class AuthModule {}

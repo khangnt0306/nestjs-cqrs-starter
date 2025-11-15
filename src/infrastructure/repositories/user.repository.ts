@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { BaseRepository } from './base.repository';
-import { User, UserStatus } from '@domain/entities/user.entity';
+import { User } from '@domain/entities/user/user.entity';
+import { UserStatus } from '@domain/entities/user/user.enum';
 
 export interface GetUsersFilter {
   email?: string;

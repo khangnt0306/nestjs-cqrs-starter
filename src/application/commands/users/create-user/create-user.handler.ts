@@ -34,14 +34,19 @@ export class CreateUserHandler
       const user = this.userRepository.create({
         ...dto,
         password: hashedPassword,
-        dateOfBirth: dto.dateOfBirth ? new Date(dto.dateOfBirth) : undefined,
+        date_of_birth: dto.date_of_birth
+          ? new Date(dto.date_of_birth)
+          : undefined,
       });
 
       // Save to database
       const savedUser = await this.userRepository.save(user);
 
       // Return response without password
-      return new UserResponseDto(savedUser);
+      return new UserResponseDto({
+        ...savedUser,
+        password: undefined,
+      });
     } catch (error) {
       throw new BadRequestException('Failed to create user');
     }
