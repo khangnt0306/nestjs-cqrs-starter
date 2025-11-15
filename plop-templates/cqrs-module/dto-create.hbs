@@ -1,0 +1,22 @@
+import { ApiProperty } from '@nestjs/swagger';
+import { IsString, IsEnum, IsOptional, MinLength, MaxLength } from 'class-validator';
+import { {{pascalCase name}}Status } from '@domain/entities/{{kebabCase name}}.entity';
+
+export class Create{{pascalCase name}}Dto {
+  @ApiProperty({ example: 'Sample {{pascalCase name}}' })
+  @IsString()
+  @MinLength(2)
+  @MaxLength(150)
+  name: string;
+
+  @ApiProperty({ example: 'Description here', required: false })
+  @IsOptional()
+  @IsString()
+  @MaxLength(2000)
+  description?: string;
+
+  @ApiProperty({ enum: {{pascalCase name}}Status, example: {{pascalCase name}}Status.ACTIVE })
+  @IsEnum({{pascalCase name}}Status)
+  status: {{pascalCase name}}Status;
+}
+

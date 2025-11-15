@@ -1,0 +1,41 @@
+import { Injectable } from '@nestjs/common';
+import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
+import { Get{{pascalCase name}}sQuery } from './get-{{kebabCase name}}s.query';
+import { {{pascalCase name}}Repository } from '@infrastructure/repositories/{{kebabCase name}}.repository';
+import { {{pascalCase name}}ResponseDto } from '@shared/dtos/{{camelCase name}}s';
+import { PaginationResponseDto } from '@shared/dtos/pagination.dto';
+
+export class Get{{pascalCase name}}sResponseDto {
+  {{camelCase name}}s: {{pascalCase name}}ResponseDto[];
+  pagination: PaginationResponseDto;
+
+  constructor({{camelCase name}}s: {{pascalCase name}}ResponseDto[], pagination: PaginationResponseDto) {
+    this.{{camelCase name}}s = {{camelCase name}}s;
+    this.pagination = pagination;
+  }
+}
+
+@QueryHandler(Get{{pascalCase name}}sQuery)
+@Injectable()
+export class Get{{pascalCase name}}sHandler
+  implements IQueryHandler<Get{{pascalCase name}}sQuery, Get{{pascalCase name}}sResponseDto>
+{
+  constructor(private readonly {{camelCase name}}Repository: {{pascalCase name}}Repository) {}
+
+  async execute(query: Get{{pascalCase name}}sQuery): Promise<Get{{pascalCase name}}sResponseDto> {
+    const { queryDto } = query;
+    const { skip = 0, limit = 10, textSearch, filter = {} } = queryDto;
+
+    const [{{camelCase name}}s, total] = await this.{{camelCase name}}Repository.get{{pascalCase name}}sWithFilters(
+      filter,
+      { skip, limit },
+      textSearch,
+    );
+
+    const {{camelCase name}}Dtos = {{camelCase name}}s.map(({{camelCase name}}) => new {{pascalCase name}}ResponseDto({{camelCase name}}));
+    const pagination = new PaginationResponseDto(total, skip, limit);
+
+    return new Get{{pascalCase name}}sResponseDto({{camelCase name}}Dtos, pagination);
+  }
+}
+

@@ -1,0 +1,23 @@
+import { ApiProperty } from '@nestjs/swagger';
+import { Expose } from 'class-transformer';
+
+@Expose()
+export class {{pascalCase name}}ResponseDto {
+  @ApiProperty()
+  id: string;
+
+  @ApiProperty()
+  name: string;
+
+  @ApiProperty()
+  createdAt: Date;
+
+  @ApiProperty()
+  updatedAt: Date;
+
+  constructor(partial: Partial<{{pascalCase name}}ResponseDto>) {
+    Object.assign(this, partial);
+  }
+}
+
+

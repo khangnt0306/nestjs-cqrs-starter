@@ -1,0 +1,37 @@
+import { Module } from '@nestjs/common';
+import { CqrsModule } from '@nestjs/cqrs';
+import { {{pascalCase name}}sController } from './{{kebabCase name}}s.controller';
+import { {{pascalCase name}}Repository } from '@infrastructure/repositories/{{kebabCase name}}.repository';
+
+// Command Handlers
+import {
+  Create{{pascalCase name}}Handler,
+  Update{{pascalCase name}}Handler,
+  Delete{{pascalCase name}}Handler,
+} from '@application/commands/{{camelCase name}}s';
+
+// Query Handlers
+import {
+  Get{{pascalCase name}}ByIdHandler,
+  Get{{pascalCase name}}sHandler,
+} from '@application/queries/{{camelCase name}}s';
+
+const CommandHandlers = [
+  Create{{pascalCase name}}Handler,
+  Update{{pascalCase name}}Handler,
+  Delete{{pascalCase name}}Handler,
+];
+
+const QueryHandlers = [
+  Get{{pascalCase name}}ByIdHandler,
+  Get{{pascalCase name}}sHandler,
+];
+
+@Module({
+  imports: [CqrsModule],
+  controllers: [{{pascalCase name}}sController],
+  providers: [{{pascalCase name}}Repository, ...CommandHandlers, ...QueryHandlers],
+  exports: [{{pascalCase name}}Repository],
+})
+export class {{pascalCase name}}sModule {}
+

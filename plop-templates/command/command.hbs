@@ -1,0 +1,10 @@
+import { ICommand } from '@nestjs/cqrs';
+
+export class {{pascalCase name}}Command implements ICommand {
+  constructor(
+    // Add your command parameters here
+    public readonly data: any,
+  ) {}
+}
+
+

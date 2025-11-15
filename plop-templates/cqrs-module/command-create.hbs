@@ -1,0 +1,7 @@
+import { ICommand } from '@nestjs/cqrs';
+import { Create{{pascalCase name}}Dto } from '@shared/dtos/{{camelCase name}}s';
+
+export class Create{{pascalCase name}}Command implements ICommand {
+  constructor(public readonly dto: Create{{pascalCase name}}Dto) {}
+}
+

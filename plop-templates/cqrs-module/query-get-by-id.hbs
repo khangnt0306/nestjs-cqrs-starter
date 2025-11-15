@@ -1,0 +1,6 @@
+import { IQuery } from '@nestjs/cqrs';
+
+export class Get{{pascalCase name}}ByIdQuery implements IQuery {
+  constructor(public readonly {{camelCase name}}Id: string) {}
+}
+

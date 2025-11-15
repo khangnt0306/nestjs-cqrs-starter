@@ -1,0 +1,25 @@
+import { Entity, Column, Index } from 'typeorm';
+import { BaseEntity } from './base.entity';
+
+export enum {{pascalCase name}}Status {
+  ACTIVE = 'ACTIVE',
+  INACTIVE = 'INACTIVE',
+}
+
+@Entity('{{camelCase name}}s')
+export class {{pascalCase name}} extends BaseEntity {
+  @Index()
+  @Column()
+  name: string;
+
+  @Column({ type: 'text', nullable: true })
+  description?: string;
+
+  @Column({
+    type: 'enum',
+    enum: {{pascalCase name}}Status,
+    default: {{pascalCase name}}Status.ACTIVE,
+  })
+  status: {{pascalCase name}}Status;
+}
+

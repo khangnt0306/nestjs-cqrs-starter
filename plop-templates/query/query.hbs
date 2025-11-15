@@ -1,0 +1,10 @@
+import { IQuery } from '@nestjs/cqrs';
+
+export class {{pascalCase name}}Query implements IQuery {
+  constructor(
+    // Add your query parameters here
+    public readonly params: any,
+  ) {}
+}
+
+

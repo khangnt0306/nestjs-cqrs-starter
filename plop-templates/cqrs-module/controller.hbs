@@ -1,0 +1,123 @@
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  Query,
+  UseGuards,
+  HttpCode,
+  HttpStatus,
+  ClassSerializerInterceptor,
+  UseInterceptors,
+} from '@nestjs/common';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import {
+  Create{{pascalCase name}}Dto,
+  Update{{pascalCase name}}Dto,
+  Get{{pascalCase name}}sQueryDto,
+  {{pascalCase name}}ResponseDto,
+} from '@shared/dtos/{{camelCase name}}s';
+import {
+  Create{{pascalCase name}}Command,
+  Update{{pascalCase name}}Command,
+  Delete{{pascalCase name}}Command,
+} from '@application/commands/{{camelCase name}}s';
+import {
+  Get{{pascalCase name}}ByIdQuery,
+  Get{{pascalCase name}}sQuery,
+  Get{{pascalCase name}}sResponseDto,
+} from '@application/queries/{{camelCase name}}s';
+
+@ApiTags('{{camelCase name}}s')
+@Controller('{{kebabCase name}}s')
+@UseInterceptors(ClassSerializerInterceptor)
+export class {{pascalCase name}}sController {
+  constructor(
+    private readonly commandBus: CommandBus,
+    private readonly queryBus: QueryBus,
+  ) {}
+
+  @Post()
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Create a new {{lowerCase name}}' })
+  @ApiResponse({
+    status: 201,
+    description: '{{pascalCase name}} created successfully',
+    type: {{pascalCase name}}ResponseDto,
+  })
+  async create(@Body() create{{pascalCase name}}Dto: Create{{pascalCase name}}Dto) {
+    return this.commandBus.execute(
+      new Create{{pascalCase name}}Command(create{{pascalCase name}}Dto),
+    );
+  }
+
+  @Get()
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get all {{lowerCase name}}s with filters' })
+  @ApiResponse({
+    status: 200,
+    description: '{{pascalCase name}}s retrieved successfully',
+  })
+  async findAll(@Query() queryDto: Get{{pascalCase name}}sQueryDto) {
+    return this.queryBus.execute<Get{{pascalCase name}}sQuery, Get{{pascalCase name}}sResponseDto>(
+      new Get{{pascalCase name}}sQuery(queryDto),
+    );
+  }
+
+  @Get(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get {{lowerCase name}} by ID' })
+  @ApiResponse({
+    status: 200,
+    description: '{{pascalCase name}} retrieved successfully',
+    type: {{pascalCase name}}ResponseDto,
+  })
+  async findOne(@Param('id') id: string) {
+    return this.queryBus.execute(new Get{{pascalCase name}}ByIdQuery(id));
+  }
+
+  @Put(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update {{lowerCase name}} by ID' })
+  @ApiResponse({
+    status: 200,
+    description: '{{pascalCase name}} updated successfully',
+    type: {{pascalCase name}}ResponseDto,
+  })
+  async update(
+    @Param('id') id: string,
+    @Body() update{{pascalCase name}}Dto: Update{{pascalCase name}}Dto,
+  ) {
+    return this.commandBus.execute(
+      new Update{{pascalCase name}}Command(id, update{{pascalCase name}}Dto),
+    );
+  }
+
+  @Delete(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Delete {{lowerCase name}} by ID' })
+  @ApiResponse({
+    status: 204,
+    description: '{{pascalCase name}} deleted successfully',
+  })
+  async remove(@Param('id') id: string) {
+    return this.commandBus.execute(new Delete{{pascalCase name}}Command(id));
+  }
+}
+

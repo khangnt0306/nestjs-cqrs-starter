@@ -1,0 +1,47 @@
+import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { Update{{pascalCase name}}Command } from './update-{{kebabCase name}}.command';
+import { {{pascalCase name}}Repository } from '@infrastructure/repositories/{{kebabCase name}}.repository';
+import { {{pascalCase name}}ResponseDto } from '@shared/dtos/{{camelCase name}}s';
+
+@CommandHandler(Update{{pascalCase name}}Command)
+@Injectable()
+export class Update{{pascalCase name}}Handler
+  implements ICommandHandler<Update{{pascalCase name}}Command, {{pascalCase name}}ResponseDto>
+{
+  constructor(private readonly {{camelCase name}}Repository: {{pascalCase name}}Repository) {}
+
+  async execute(command: Update{{pascalCase name}}Command): Promise<{{pascalCase name}}ResponseDto> {
+    const { {{camelCase name}}Id, dto } = command;
+
+    // Find {{camelCase name}}
+    const {{camelCase name}} = await this.{{camelCase name}}Repository.findOne({
+      where: { id: {{camelCase name}}Id },
+    });
+    if (!{{camelCase name}}) {
+      throw new NotFoundException(
+        `{{pascalCase name}} with ID "${ {{~camelCase name~}} Id}" not found`,
+      );
+    }
+
+    // Check name duplicate if name is changed
+    if (dto.name && dto.name !== {{camelCase name}}.name) {
+      const existing{{pascalCase name}} = await this.{{camelCase name}}Repository.findByName(dto.name);
+      if (existing{{pascalCase name}}) {
+        throw new ConflictException(
+          `{{pascalCase name}} with name "${dto.name}" already exists`,
+        );
+      }
+    }
+
+    // Update fields
+    Object.assign({{camelCase name}}, dto);
+
+    // Save
+    const updated{{pascalCase name}} = await this.{{camelCase name}}Repository.save({{camelCase name}});
+
+    // Return response
+    return new {{pascalCase name}}ResponseDto(updated{{pascalCase name}});
+  }
+}
+

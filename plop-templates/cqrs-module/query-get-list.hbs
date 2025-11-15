@@ -1,0 +1,7 @@
+import { IQuery } from '@nestjs/cqrs';
+import { Get{{pascalCase name}}sQueryDto } from '@shared/dtos/{{camelCase name}}s';
+
+export class Get{{pascalCase name}}sQuery implements IQuery {
+  constructor(public readonly queryDto: Get{{pascalCase name}}sQueryDto) {}
+}
+

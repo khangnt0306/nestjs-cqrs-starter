@@ -1,0 +1,23 @@
+import { Injectable } from '@nestjs/common';
+import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { {{pascalCase name}}Command } from './{{kebabCase name}}.command';
+
+@CommandHandler({{pascalCase name}}Command)
+@Injectable()
+export class {{pascalCase name}}Handler
+  implements ICommandHandler<{{pascalCase name}}Command, any>
+{
+  constructor(
+    // Inject your dependencies here
+  ) {}
+
+  async execute(command: {{pascalCase name}}Command): Promise<any> {
+    const { data } = command;
+
+    // TODO: Implement your business logic here
+
+    return { success: true };
+  }
+}
+
+

@@ -1,0 +1,105 @@
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  Query,
+  UseGuards,
+  HttpCode,
+  HttpStatus,
+  ClassSerializerInterceptor,
+  UseInterceptors,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { {{pascalCase name}}sService } from './{{kebabCase name}}s.service';
+import {
+  Create{{pascalCase name}}Dto,
+  Update{{pascalCase name}}Dto,
+  Get{{pascalCase name}}sQueryDto,
+  {{pascalCase name}}ResponseDto,
+} from '@shared/dtos/{{camelCase name}}s';
+
+@ApiTags('{{camelCase name}}s')
+@Controller('{{kebabCase name}}s')
+@UseInterceptors(ClassSerializerInterceptor)
+export class {{pascalCase name}}sController {
+  constructor(private readonly {{camelCase name}}sService: {{pascalCase name}}sService) {}
+
+  @Post()
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Create a new {{lowerCase name}}' })
+  @ApiResponse({
+    status: 201,
+    description: '{{pascalCase name}} created successfully',
+    type: {{pascalCase name}}ResponseDto,
+  })
+  async create(@Body() create{{pascalCase name}}Dto: Create{{pascalCase name}}Dto) {
+    return this.{{camelCase name}}sService.create(create{{pascalCase name}}Dto);
+  }
+
+  @Get()
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get all {{lowerCase name}}s with filters' })
+  @ApiResponse({
+    status: 200,
+    description: '{{pascalCase name}}s retrieved successfully',
+  })
+  async findAll(@Query() queryDto: Get{{pascalCase name}}sQueryDto) {
+    return this.{{camelCase name}}sService.findAll(queryDto);
+  }
+
+  @Get(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get {{lowerCase name}} by ID' })
+  @ApiResponse({
+    status: 200,
+    description: '{{pascalCase name}} retrieved successfully',
+    type: {{pascalCase name}}ResponseDto,
+  })
+  async findOne(@Param('id') id: string) {
+    return this.{{camelCase name}}sService.findOne(id);
+  }
+
+  @Put(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update {{lowerCase name}} by ID' })
+  @ApiResponse({
+    status: 200,
+    description: '{{pascalCase name}} updated successfully',
+    type: {{pascalCase name}}ResponseDto,
+  })
+  async update(
+    @Param('id') id: string,
+    @Body() update{{pascalCase name}}Dto: Update{{pascalCase name}}Dto,
+  ) {
+    return this.{{camelCase name}}sService.update(id, update{{pascalCase name}}Dto);
+  }
+
+  @Delete(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Delete {{lowerCase name}} by ID' })
+  @ApiResponse({
+    status: 204,
+    description: '{{pascalCase name}} deleted successfully',
+  })
+  async remove(@Param('id') id: string) {
+    return this.{{camelCase name}}sService.remove(id);
+  }
+}
+
+

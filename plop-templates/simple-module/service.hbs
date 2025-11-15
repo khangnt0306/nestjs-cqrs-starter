@@ -1,0 +1,112 @@
+import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import { {{pascalCase name}}Repository } from '@infrastructure/repositories/{{kebabCase name}}.repository';
+import {
+  Create{{pascalCase name}}Dto,
+  Update{{pascalCase name}}Dto,
+  Get{{pascalCase name}}sQueryDto,
+  {{pascalCase name}}ResponseDto,
+} from '@shared/dtos/{{camelCase name}}s';
+import { PaginationResponseDto } from '@shared/dtos/pagination.dto';
+
+export class Get{{pascalCase name}}sResponseDto {
+  {{camelCase name}}s: {{pascalCase name}}ResponseDto[];
+  pagination: PaginationResponseDto;
+
+  constructor({{camelCase name}}s: {{pascalCase name}}ResponseDto[], pagination: PaginationResponseDto) {
+    this.{{camelCase name}}s = {{camelCase name}}s;
+    this.pagination = pagination;
+  }
+}
+
+@Injectable()
+export class {{pascalCase name}}sService {
+  constructor(private readonly {{camelCase name}}Repository: {{pascalCase name}}Repository) {}
+
+  async create(dto: Create{{pascalCase name}}Dto): Promise<{{pascalCase name}}ResponseDto> {
+    // Validate business rules
+    const existing{{pascalCase name}} = await this.{{camelCase name}}Repository.findByName(dto.name);
+    if (existing{{pascalCase name}}) {
+      throw new ConflictException(
+        `{{pascalCase name}} with name "${dto.name}" already exists`,
+      );
+    }
+
+    // Create entity
+    const {{camelCase name}} = this.{{camelCase name}}Repository.create(dto);
+
+    // Save to database
+    const saved{{pascalCase name}} = await this.{{camelCase name}}Repository.save({{camelCase name}});
+
+    return new {{pascalCase name}}ResponseDto(saved{{pascalCase name}});
+  }
+
+  async findAll(queryDto: Get{{pascalCase name}}sQueryDto): Promise<Get{{pascalCase name}}sResponseDto> {
+    const { skip = 0, limit = 10, textSearch, filter = {} } = queryDto;
+
+    const [{{camelCase name}}s, total] = await this.{{camelCase name}}Repository.get{{pascalCase name}}sWithFilters(
+      filter,
+      { skip, limit },
+      textSearch,
+    );
+
+    const {{camelCase name}}Dtos = {{camelCase name}}s.map(({{camelCase name}}) => new {{pascalCase name}}ResponseDto({{camelCase name}}));
+    const pagination = new PaginationResponseDto(total, skip, limit);
+
+    return new Get{{pascalCase name}}sResponseDto({{camelCase name}}Dtos, pagination);
+  }
+
+  async findOne(id: string): Promise<{{pascalCase name}}ResponseDto> {
+    const {{camelCase name}} = await this.{{camelCase name}}Repository.findOne({
+      where: { id },
+    });
+
+    if (!{{camelCase name}}) {
+      throw new NotFoundException(`{{pascalCase name}} with ID "${id}" not found`);
+    }
+
+    return new {{pascalCase name}}ResponseDto({{camelCase name}});
+  }
+
+  async update(id: string, dto: Update{{pascalCase name}}Dto): Promise<{{pascalCase name}}ResponseDto> {
+    // Find {{camelCase name}}
+    const {{camelCase name}} = await this.{{camelCase name}}Repository.findOne({
+      where: { id },
+    });
+    if (!{{camelCase name}}) {
+      throw new NotFoundException(`{{pascalCase name}} with ID "${id}" not found`);
+    }
+
+    // Check name duplicate if name is changed
+    if (dto.name && dto.name !== {{camelCase name}}.name) {
+      const existing{{pascalCase name}} = await this.{{camelCase name}}Repository.findByName(dto.name);
+      if (existing{{pascalCase name}}) {
+        throw new ConflictException(
+          `{{pascalCase name}} with name "${dto.name}" already exists`,
+        );
+      }
+    }
+
+    // Update fields
+    Object.assign({{camelCase name}}, dto);
+
+    // Save
+    const updated{{pascalCase name}} = await this.{{camelCase name}}Repository.save({{camelCase name}});
+
+    return new {{pascalCase name}}ResponseDto(updated{{pascalCase name}});
+  }
+
+  async remove(id: string): Promise<void> {
+    // Find {{camelCase name}}
+    const {{camelCase name}} = await this.{{camelCase name}}Repository.findOne({
+      where: { id },
+    });
+    if (!{{camelCase name}}) {
+      throw new NotFoundException(`{{pascalCase name}} with ID "${id}" not found`);
+    }
+
+    // Soft delete
+    await this.{{camelCase name}}Repository.softRemove({{camelCase name}});
+  }
+}
+
+

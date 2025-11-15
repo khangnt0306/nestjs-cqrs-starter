@@ -1,0 +1,14 @@
+import { ApiProperty } from '@nestjs/swagger';
+import { IsString, MinLength, MaxLength } from 'class-validator';
+
+export class Create{{pascalCase name}}Dto {
+  @ApiProperty({ example: 'Sample name' })
+  @IsString()
+  @MinLength(2)
+  @MaxLength(150)
+  name: string;
+
+  // Add more fields as needed
+}
+
+

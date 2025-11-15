@@ -1,0 +1,39 @@
+import { Injectable, ConflictException } from '@nestjs/common';
+import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { Create{{pascalCase name}}Command } from './create-{{kebabCase name}}.command';
+import { {{pascalCase name}}Repository } from '@infrastructure/repositories/{{kebabCase name}}.repository';
+import { {{pascalCase name}}ResponseDto } from '@shared/dtos/{{camelCase name}}s';
+
+@CommandHandler(Create{{pascalCase name}}Command)
+@Injectable()
+export class Create{{pascalCase name}}Handler
+  implements ICommandHandler<Create{{pascalCase name}}Command, {{pascalCase name}}ResponseDto>
+{
+  constructor(private readonly {{camelCase name}}Repository: {{pascalCase name}}Repository) {}
+
+  async execute(command: Create{{pascalCase name}}Command): Promise<{{pascalCase name}}ResponseDto> {
+    const { dto } = command;
+
+    // Validate business rules
+    const existing{{pascalCase name}} = await this.{{camelCase name}}Repository.findByName(dto.name);
+    if (existing{{pascalCase name}}) {
+      throw new ConflictException(
+        `{{pascalCase name}} with name "${dto.name}" already exists`,
+      );
+    }
+
+    // Create entity
+    const {{camelCase name}} = this.{{camelCase name}}Repository.create({
+      name: dto.name,
+      description: dto.description,
+      status: dto.status,
+    });
+
+    // Save to database
+    const saved{{pascalCase name}} = await this.{{camelCase name}}Repository.save({{camelCase name}});
+
+    // Return response
+    return new {{pascalCase name}}ResponseDto(saved{{pascalCase name}});
+  }
+}
+

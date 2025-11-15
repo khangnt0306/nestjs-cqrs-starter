@@ -1,0 +1,61 @@
+import { Injectable } from '@nestjs/common';
+import { DataSource } from 'typeorm';
+import { BaseRepository } from './base.repository';
+import { {{pascalCase name}}, {{pascalCase name}}Status } from '@domain/entities/{{kebabCase name}}.entity';
+
+export interface Get{{pascalCase name}}sFilter {
+  name?: string;
+  status?: {{pascalCase name}}Status;
+}
+
+export interface PagingOptions {
+  skip: number;
+  limit: number;
+}
+
+@Injectable()
+export class {{pascalCase name}}Repository extends BaseRepository<{{pascalCase name}}> {
+  constructor(dataSource: DataSource) {
+    super({{pascalCase name}}, dataSource);
+  }
+
+  async findByName(name: string): Promise<{{pascalCase name}} | null> {
+    return this.findOne({ where: { name } });
+  }
+
+  async get{{pascalCase name}}sWithFilters(
+    filter: Get{{pascalCase name}}sFilter,
+    paging: PagingOptions,
+    textSearch?: string,
+  ): Promise<[{{pascalCase name}}[], number]> {
+    let qb = this.createQueryBuilder('{{camelCase name}}').where('{{camelCase name}}.deletedAt IS NULL');
+
+    // Text search
+    if (textSearch) {
+      qb = qb.andWhere(
+        '({{camelCase name}}.name ILIKE :search OR {{camelCase name}}.description ILIKE :search)',
+        { search: `%${textSearch}%` },
+      );
+    }
+
+    // Filters
+    if (filter.name) {
+      qb = qb.andWhere('{{camelCase name}}.name ILIKE :name', {
+        name: `%${filter.name}%`,
+      });
+    }
+
+    if (filter.status) {
+      qb = qb.andWhere('{{camelCase name}}.status = :status', { status: filter.status });
+    }
+
+    // Paging
+    qb = qb.skip(paging.skip).take(paging.limit);
+
+    // Sort
+    qb = qb.orderBy('{{camelCase name}}.createdAt', 'DESC');
+
+    return qb.getManyAndCount();
+  }
+}
+

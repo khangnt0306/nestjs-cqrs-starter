@@ -1,0 +1,29 @@
+import { ApiProperty } from '@nestjs/swagger';
+import { Expose } from 'class-transformer';
+import { {{pascalCase name}}Status } from '@domain/entities/{{kebabCase name}}.entity';
+
+@Expose()
+export class {{pascalCase name}}ResponseDto {
+  @ApiProperty()
+  id: string;
+
+  @ApiProperty()
+  name: string;
+
+  @ApiProperty()
+  description?: string;
+
+  @ApiProperty({ enum: {{pascalCase name}}Status })
+  status: {{pascalCase name}}Status;
+
+  @ApiProperty()
+  createdAt: Date;
+
+  @ApiProperty()
+  updatedAt: Date;
+
+  constructor(partial: Partial<{{pascalCase name}}ResponseDto>) {
+    Object.assign(this, partial);
+  }
+}
+

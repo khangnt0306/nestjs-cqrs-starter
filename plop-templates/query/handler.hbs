@@ -1,0 +1,23 @@
+import { Injectable } from '@nestjs/common';
+import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
+import { {{pascalCase name}}Query } from './{{kebabCase name}}.query';
+
+@QueryHandler({{pascalCase name}}Query)
+@Injectable()
+export class {{pascalCase name}}Handler
+  implements IQueryHandler<{{pascalCase name}}Query, any>
+{
+  constructor(
+    // Inject your dependencies here
+  ) {}
+
+  async execute(query: {{pascalCase name}}Query): Promise<any> {
+    const { params } = query;
+
+    // TODO: Implement your query logic here
+
+    return { data: [] };
+  }
+}
+
+

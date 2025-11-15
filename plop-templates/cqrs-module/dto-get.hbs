@@ -1,0 +1,27 @@
+import { ApiProperty } from '@nestjs/swagger';
+import { IsOptional, IsString, IsEnum } from 'class-validator';
+import { {{pascalCase name}}Status } from '@domain/entities/{{kebabCase name}}.entity';
+import { PaginationDto } from '../pagination.dto';
+
+export class Get{{pascalCase name}}sFilterDto {
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  name?: string;
+
+  @ApiProperty({ enum: {{pascalCase name}}Status, required: false })
+  @IsOptional()
+  @IsEnum({{pascalCase name}}Status)
+  status?: {{pascalCase name}}Status;
+}
+
+export class Get{{pascalCase name}}sQueryDto extends PaginationDto {
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  textSearch?: string;
+
+  @ApiProperty({ type: Get{{pascalCase name}}sFilterDto, required: false })
+  filter?: Get{{pascalCase name}}sFilterDto;
+}
+
