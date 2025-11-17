@@ -5,8 +5,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeOrmConfigService } from './infrastructure/database/typeorm-config.service';
 import { UsersModule } from './presentation/users/users.module';
 import { AuthModule } from './presentation/auth/auth.module';
-import { PostsModule } from './presentation/post/posts.module';
-
+import { CategoriesModule } from './presentation/categories/categories.module';
+import { PlansModule } from './presentation/plans/plans.module';
+import { PlanItemsModule } from './presentation/plansItem/planItems.module';
 @Module({
   imports: [
     // Configuration
@@ -26,7 +27,9 @@ import { PostsModule } from './presentation/post/posts.module';
     // Feature modules
     AuthModule,
     UsersModule,
-    PostsModule,
+    CategoriesModule,
+    PlansModule,
+    PlanItemsModule,
   ],
 })
 export class AppModule {}

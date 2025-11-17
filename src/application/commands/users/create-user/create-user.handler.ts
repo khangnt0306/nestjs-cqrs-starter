@@ -34,9 +34,6 @@ export class CreateUserHandler
       const user = this.userRepository.create({
         ...dto,
         password: hashedPassword,
-        date_of_birth: dto.date_of_birth
-          ? new Date(dto.date_of_birth)
-          : undefined,
       });
 
       // Save to database

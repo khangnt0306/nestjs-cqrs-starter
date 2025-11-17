@@ -23,7 +23,8 @@ export class LoginResponseDto {
   user: {
     id: string;
     email: string;
-    name: string;
+    full_name: string;
+    avatar_url: string;
     role: string;
   };
 }

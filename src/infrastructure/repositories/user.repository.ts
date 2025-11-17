@@ -6,7 +6,7 @@ import { UserStatus } from '@domain/entities/user/user.enum';
 
 export interface GetUsersFilter {
   email?: string;
-  name?: string;
+  full_name?: string;
   role?: string;
   status?: UserStatus;
 }
@@ -36,7 +36,7 @@ export class UserRepository extends BaseRepository<User> {
     // Text search
     if (textSearch) {
       qb = qb.andWhere(
-        '(user.name ILIKE :search OR user.email ILIKE :search)',
+        '(user.full_name ILIKE :search OR user.email ILIKE :search)',
         { search: `%${textSearch}%` },
       );
     }
@@ -48,9 +48,9 @@ export class UserRepository extends BaseRepository<User> {
       });
     }
 
-    if (filter.name) {
-      qb = qb.andWhere('user.name ILIKE :name', {
-        name: `%${filter.name}%`,
+    if (filter.full_name) {
+      qb = qb.andWhere('user.full_name ILIKE :full_name', {
+        full_name: `%${filter.full_name}%`,
       });
     }
 

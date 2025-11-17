@@ -15,15 +15,6 @@ export class UserResponseDto {
   @ApiProperty()
   full_name: string;
 
-  @ApiProperty()
-  user_name: string;
-
-  @ApiProperty({ required: false })
-  phone_number?: string;
-
-  @ApiProperty({ required: false })
-  date_of_birth?: Date;
-
   @ApiProperty({ required: false })
   avatar_url?: string;
 

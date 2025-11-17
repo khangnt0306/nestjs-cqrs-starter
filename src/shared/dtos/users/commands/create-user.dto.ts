@@ -6,7 +6,6 @@ import {
   MaxLength,
   IsOptional,
   IsEnum,
-  IsDateString,
   Matches,
 } from 'class-validator';
 import { UserRole, UserStatus } from '@domain/entities/user/user.enum';
@@ -31,23 +30,6 @@ export class CreateUserDto {
   @MinLength(2)
   @MaxLength(150)
   full_name: string;
-
-  @ApiProperty({ example: 'johndoe' })
-  @IsString()
-  @MinLength(2)
-  @MaxLength(150)
-  user_name: string;
-
-  @ApiProperty({ required: false, example: '+84901234567' })
-  @IsOptional()
-  @IsString()
-  @MaxLength(20)
-  phone_number?: string;
-
-  @ApiProperty({ required: false, example: '1990-01-01' })
-  @IsOptional()
-  @IsDateString()
-  date_of_birth?: string;
 
   @ApiProperty({ required: false, example: 'https://example.com/avatar.jpg' })
   @IsOptional()

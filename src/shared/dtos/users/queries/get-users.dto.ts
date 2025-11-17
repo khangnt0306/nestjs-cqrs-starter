@@ -12,7 +12,7 @@ export class GetUsersFilterDto {
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
-  name?: string;
+  full_name?: string;
 
   @ApiProperty({ enum: UserRole, required: false })
   @IsOptional()

@@ -1,0 +1,71 @@
+import { Injectable } from '@nestjs/common';
+import { DataSource } from 'typeorm';
+import { BaseRepository } from './base.repository';
+import { Plan } from '@domain/entities/plan/plan.entity';
+import { RepeatType } from '@domain/entities/plan/plan.enum';
+
+export interface GetPlansFilter {
+  name?: string;
+  repeatType?: RepeatType;
+}
+
+export interface PagingOptions {
+  skip: number;
+  limit: number;
+}
+
+@Injectable()
+export class PlanRepository extends BaseRepository<Plan> {
+  constructor(dataSource: DataSource) {
+    super(Plan, dataSource);
+  }
+
+  async findByName(name: string): Promise<Plan | null> {
+    return this.findOne({ where: { name } });
+  }
+
+  async getPlansWithFilters(
+    filter: GetPlansFilter,
+    paging: PagingOptions,
+    textSearch?: string,
+    userId?: string,
+  ): Promise<[Plan[], number]> {
+    let qb = this.createQueryBuilder('plan').leftJoinAndSelect(
+      'plan.items',
+      'items',
+    );
+
+    // Filter by user ID if provided
+    if (userId) {
+      qb = qb.andWhere('plan.userId = :userId', { userId });
+    }
+
+    // Text search
+    if (textSearch) {
+      qb = qb.andWhere('plan.name ILIKE :search', {
+        search: `%${textSearch}%`,
+      });
+    }
+
+    // Filters
+    if (filter.name) {
+      qb = qb.andWhere('plan.name ILIKE :name', {
+        name: `%${filter.name}%`,
+      });
+    }
+
+    if (filter.repeatType) {
+      qb = qb.andWhere('plan.repeatType = :repeatType', {
+        repeatType: filter.repeatType,
+      });
+    }
+
+    // Paging
+    qb = qb.skip(paging.skip).take(paging.limit);
+
+    // Sort
+    qb = qb.orderBy('plan.createdAt', 'DESC');
+
+    return qb.getManyAndCount();
+  }
+}
