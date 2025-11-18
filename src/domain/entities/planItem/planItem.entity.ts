@@ -6,10 +6,14 @@ import {
   JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
 import { Plan } from '../plan/plan.entity';
 import { Category } from '../categories/category.entity';
 import { EXCLUDE_TYPE, PlanItemType } from './planItem.enum';
+import { DailyDefaultTransaction } from '../default-transaction';
+import { DailyTransaction } from '../daily-transaction/daily-transaction.entity';
+import { PlanItemDailyBreakdown } from '../plan-item-daily-breakdown/plan-item-daily-breakdown.entity';
 
 @Entity('plan_items')
 export class PlanItem {
@@ -50,14 +54,16 @@ export class PlanItem {
   @Column({ default: false })
   isDailyBased: boolean;
 
-  //   @OneToMany(() => PlanItemDailyBreakdown, b => b.planItem, { cascade: ['insert', 'update', 'remove'] })
-  //   dailyBreakdowns: PlanItemDailyBreakdown[];
+  @OneToMany(() => PlanItemDailyBreakdown, (b) => b.planItem, {
+    cascade: ['insert', 'update', 'remove'],
+  })
+  dailyBreakdowns: PlanItemDailyBreakdown[];
 
-  //   @OneToMany(() => PlanItemDailyBreakdown, (breakdown) => breakdown.planItem)
-  //   dailyBreakdowns: PlanItemDailyBreakdown[];
+  @OneToMany(() => DailyDefaultTransaction, (t) => t.planItem)
+  dailyDefaults: DailyDefaultTransaction[];
 
-  //   @OneToMany(() => Transaction, (transaction) => transaction.planItem)
-  //   transactions: Transaction[];
+  @OneToMany(() => DailyTransaction, (t) => t.planItem)
+  transactions: DailyTransaction[];
 
   @CreateDateColumn()
   createdAt: Date;

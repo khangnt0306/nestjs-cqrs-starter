@@ -3,7 +3,6 @@ import {
   Column,
   PrimaryGeneratedColumn,
   ManyToOne,
-  // OneToMany,
   CreateDateColumn,
   UpdateDateColumn,
   JoinColumn,
@@ -12,10 +11,9 @@ import {
 import { User } from '../user';
 import { RepeatType } from './plan.enum';
 import { PlanItem } from '../planItem/planItem.entity';
-// import { DailySummary } from './daily-summary.entity';
-// import { AdjustmentLog } from './adjustment-log.entity';
-// import { Notification } from './notification.entity';
-// import { Transaction } from './transaction.entity';
+import { DailyTransaction } from '../daily-transaction/daily-transaction.entity';
+import { DailySummary } from '../daily-summary/daily-summary.entity';
+import { AdjustmentLog } from '../adjustment-log/adjustment-log.entity';
 
 @Entity('plans')
 export class Plan {
@@ -55,20 +53,16 @@ export class Plan {
   @Column({ type: 'decimal', nullable: true })
   warnLevelRed: number;
 
-  // @OneToMany(() => PlanItem, planItem => planItem.plan)
-  // items: PlanItem[];
+  @OneToMany(() => DailyTransaction, (tx) => tx.plan, {
+    cascade: ['insert', 'update', 'remove'],
+  })
+  transactions: DailyTransaction[];
 
-  // @OneToMany(() => DailySummary, summary => summary.plan)
-  // dailySummaries: DailySummary[];
+  @OneToMany(() => DailySummary, (summary) => summary.plan)
+  dailySummaries: DailySummary[];
 
-  // @OneToMany(() => AdjustmentLog, log => log.plan)
-  // adjustmentLogs: AdjustmentLog[];
-
-  // @OneToMany(() => Notification, notification => notification.plan)
-  // notifications: Notification[];
-
-  // @OneToMany(() => Transaction, transaction => transaction.plan)
-  // transactions: Transaction[];
+  @OneToMany(() => AdjustmentLog, (log) => log.plan)
+  adjustmentLogs: AdjustmentLog[];
 
   @CreateDateColumn()
   createdAt: Date;

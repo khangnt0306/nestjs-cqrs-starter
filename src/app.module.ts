@@ -8,6 +8,8 @@ import { AuthModule } from './presentation/auth/auth.module';
 import { CategoriesModule } from './presentation/categories/categories.module';
 import { PlansModule } from './presentation/plans/plans.module';
 import { PlanItemsModule } from './presentation/plansItem/planItems.module';
+import { DefaultTransactionsModule } from './presentation/default-transactions/default-transactions.module';
+import { DailyTransactionsModule } from './presentation/daily-transactions/daily-transactions.module';
 @Module({
   imports: [
     // Configuration
@@ -30,6 +32,8 @@ import { PlanItemsModule } from './presentation/plansItem/planItems.module';
     CategoriesModule,
     PlansModule,
     PlanItemsModule,
+    DefaultTransactionsModule,
+    DailyTransactionsModule,
   ],
 })
 export class AppModule {}

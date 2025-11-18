@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, IsString, IsEnum } from 'class-validator';
-import { PaginationDto } from '../pagination.dto';
+import { PaginationDto } from '../../pagination.dto';
 import { PlanItemType } from '@domain/entities/planItem/planItem.enum';
 
 export class GetPlanItemsFilter {
