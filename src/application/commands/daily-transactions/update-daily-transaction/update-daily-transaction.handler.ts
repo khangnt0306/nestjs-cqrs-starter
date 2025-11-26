@@ -56,12 +56,9 @@ export class UpdateDailyTransactionHandler
       id: updated.id,
       planId: updated.planId,
       planItemId: updated.planItemId,
-      categoryId: updated.categoryId,
-      type: updated.type,
       date: updated.date,
       label: updated.label,
       amount: updated.amount,
-      isDefaultGenerated: updated.isDefaultGenerated,
       createdAt: updated.createdAt,
     });
   }

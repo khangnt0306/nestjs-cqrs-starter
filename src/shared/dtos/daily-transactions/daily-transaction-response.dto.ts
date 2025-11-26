@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { TransactionType } from '@domain/entities/daily-transaction/daily-transaction.entity';
 
 @Expose()
 export class DailyTransactionResponseDto {
@@ -13,12 +12,6 @@ export class DailyTransactionResponseDto {
   @ApiProperty({ required: false })
   planItemId?: string;
 
-  @ApiProperty({ required: false })
-  categoryId?: string;
-
-  @ApiProperty({ enum: TransactionType })
-  type: TransactionType;
-
   @ApiProperty()
   date: string;
 
@@ -29,12 +22,21 @@ export class DailyTransactionResponseDto {
   amount: string;
 
   @ApiProperty()
-  isDefaultGenerated: boolean;
-
-  @ApiProperty()
   createdAt: Date;
 
   constructor(partial: Partial<DailyTransactionResponseDto>) {
+    Object.assign(this, partial);
+  }
+}
+
+export class DailyTransactionsByDateDto {
+  @ApiProperty()
+  date: string;
+
+  @ApiProperty({ type: () => [DailyTransactionResponseDto] })
+  transactions: DailyTransactionResponseDto[];
+
+  constructor(partial: Partial<DailyTransactionsByDateDto>) {
     Object.assign(this, partial);
   }
 }

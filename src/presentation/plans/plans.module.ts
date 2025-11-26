@@ -3,6 +3,8 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { PlansController } from './plans.controller';
 import { PlanRepository } from '@infrastructure/repositories/plan.repository';
 import { UserRepository } from '@infrastructure/repositories';
+import { PlanCalculationService } from '@shared/services/plan-calculation.service';
+import { DailyTransactionRepository } from '@infrastructure/repositories/daily-transaction.repository';
 
 // Command Handlers
 import {
@@ -36,6 +38,8 @@ const QueryHandlers = [
   providers: [
     PlanRepository,
     UserRepository,
+    PlanCalculationService,
+    DailyTransactionRepository,
     ...CommandHandlers,
     ...QueryHandlers,
   ],

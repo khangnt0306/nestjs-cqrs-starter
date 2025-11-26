@@ -91,4 +91,59 @@ export class DailyTransactionRepository extends BaseRepository<DailyTransaction>
 
     return qb.getManyAndCount();
   }
+
+  async getTotalAmountByPlanItem(
+    planItemId: string,
+    upToDate?: string,
+  ): Promise<number> {
+    if (!planItemId) {
+      return 0;
+    }
+
+    let qb = this.createQueryBuilder('dailyTransaction')
+      .select(
+        'COALESCE(SUM(CAST(dailyTransaction.amount AS DECIMAL(18,2))), 0)',
+        'total',
+      )
+      .where('dailyTransaction.planItemId = :planItemId', { planItemId });
+
+    if (upToDate) {
+      qb = qb.andWhere('dailyTransaction.date <= :upToDate', { upToDate });
+    }
+
+    const result = await qb.getRawOne<{ total: string }>();
+    return Number(result?.total ?? 0);
+  }
+
+  async getTotalsByPlanItemIds(
+    planItemIds: string[],
+    upToDate?: string,
+  ): Promise<Record<string, number>> {
+    if (!planItemIds || planItemIds.length === 0) {
+      return {};
+    }
+
+    let qb = this.createQueryBuilder('dailyTransaction')
+      .select('dailyTransaction.planItemId', 'planItemId')
+      .addSelect(
+        'COALESCE(SUM(CAST(dailyTransaction.amount AS DECIMAL(18,2))), 0)',
+        'total',
+      )
+      .where('dailyTransaction.planItemId IN (:...planItemIds)', {
+        planItemIds,
+      });
+
+    if (upToDate) {
+      qb = qb.andWhere('dailyTransaction.date <= :upToDate', { upToDate });
+    }
+
+    const rows = await qb
+      .groupBy('dailyTransaction.planItemId')
+      .getRawMany<{ planItemId: string; total: string }>();
+
+    return rows.reduce<Record<string, number>>((acc, row) => {
+      acc[row.planItemId] = Number(row.total ?? 0);
+      return acc;
+    }, {});
+  }
 }

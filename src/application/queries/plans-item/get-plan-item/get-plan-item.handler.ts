@@ -1,8 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { PaginationResponseDto } from '@shared/dtos/pagination.dto';
-import { PlanItemResponseDto } from '@app/shared/dtos/plansItem';
+import { PlanItemResponseDto } from '@shared/dtos/plansItem';
 import { PlanItemRepository } from '@infrastructure/repositories/planItem.repository';
+import { PlanRepository } from '@infrastructure/repositories/plan.repository';
+import { PlanCalculationService } from '@shared/services/plan-calculation.service';
+import { createPlanItemResponseDto } from '@shared/utils/plan-item-response.helper';
+import { DailyTransactionRepository } from '@infrastructure/repositories/daily-transaction.repository';
 import { GetPlanItemCommand } from './get-plan-item.query';
 
 export class GetPlanItemResponseDto {
@@ -23,11 +27,21 @@ export class GetPlanItemResponseDto {
 export class GetPlanItemHandler
   implements IQueryHandler<GetPlanItemCommand, GetPlanItemResponseDto>
 {
-  constructor(private readonly planItemRepository: PlanItemRepository) {}
+  constructor(
+    private readonly planItemRepository: PlanItemRepository,
+    private readonly planRepository: PlanRepository,
+    private readonly planCalculationService: PlanCalculationService,
+    private readonly dailyTransactionRepository: DailyTransactionRepository,
+  ) {}
 
   async execute(query: GetPlanItemCommand): Promise<GetPlanItemResponseDto> {
     const { queryDto, planId } = query;
     const { skip = 0, limit = 10, textSearch, filter = {} } = queryDto;
+
+    const plan = await this.planRepository.findOne({ where: { id: planId } });
+    if (!plan) {
+      throw new Error(`Plan with ID "${planId}" not found`);
+    }
 
     const [planItems, total] =
       await this.planItemRepository.getPlanItemsWithFilters(
@@ -37,8 +51,14 @@ export class GetPlanItemHandler
         textSearch,
       );
 
-    const planItemDtos = planItems.map(
-      (planItem) => new PlanItemResponseDto(planItem),
+    const planItemIds = planItems.map((item) => item.id);
+    const spentMap =
+      await this.dailyTransactionRepository.getTotalsByPlanItemIds(planItemIds);
+
+    const planItemDtos = planItems.map((planItem) =>
+      createPlanItemResponseDto(planItem, plan, this.planCalculationService, {
+        spentAmount: spentMap[planItem.id] ?? 0,
+      }),
     );
     const pagination = new PaginationResponseDto(total, skip, limit);
 

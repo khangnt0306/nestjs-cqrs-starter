@@ -3,7 +3,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { LoginDto, LoginResponseDto } from '@shared/dtos/auth';
-import { CreateUserDto } from '@shared/dtos/users';
+import { RegisterUserDto } from '@shared/dtos/users';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -27,8 +27,8 @@ export class AuthController {
     status: 201,
     description: 'User registered successfully',
   })
-  async register(@Body() createUserDto: CreateUserDto) {
-    return this.authService.register(createUserDto);
+  async register(@Body() registerUserDto: RegisterUserDto) {
+    return this.authService.register(registerUserDto);
   }
 
   @Post('validate')

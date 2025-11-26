@@ -2,12 +2,14 @@ import {
   Injectable,
   ConflictException,
   BadRequestException,
+  HttpStatus,
 } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import * as bcrypt from 'bcrypt';
 import { CreateUserCommand } from './create-user.command';
 import { UserRepository } from '@infrastructure/repositories';
 import { UserResponseDto } from '@shared/dtos/users';
+import { buildHttpExceptionResponse } from '@shared/utils';
 
 @CommandHandler(CreateUserCommand)
 @Injectable()
@@ -22,7 +24,11 @@ export class CreateUserHandler
     // Check if user exists
     const existingUser = await this.userRepository.findByEmail(dto.email);
     if (existingUser) {
-      throw new ConflictException('User with this email already exists');
+      throw new ConflictException(
+        buildHttpExceptionResponse(HttpStatus.CONFLICT, [
+          'User with this email already exists',
+        ]),
+      );
     }
 
     try {
@@ -45,7 +51,11 @@ export class CreateUserHandler
         password: undefined,
       });
     } catch (error) {
-      throw new BadRequestException('Failed to create user');
+      throw new BadRequestException(
+        buildHttpExceptionResponse(HttpStatus.BAD_REQUEST, [
+          'Failed to create user',
+        ]),
+      );
     }
   }
 }

@@ -13,6 +13,7 @@ import {
   ClassSerializerInterceptor,
   UseInterceptors,
   Request,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import {
@@ -62,7 +63,7 @@ export class PlansController {
   async create(@Body() createPlanDto: CreatePlanDto, @Request() req: any) {
     const userId = req.user?.id;
     if (!userId) {
-      throw new Error('User ID not found in request');
+      throw new UnauthorizedException('User không tồn tại');
     }
     return this.commandBus.execute(
       new CreatePlanCommand(createPlanDto, userId),
@@ -94,7 +95,7 @@ export class PlansController {
   async findAllSelf(@Query() queryDto: GetPlansQueryDto, @Request() req: any) {
     const userId = req.user?.id;
     if (!userId) {
-      throw new Error('User ID not found in request');
+      throw new UnauthorizedException('User không tồn tại');
     }
     return this.queryBus.execute<GetPlansSelfQuery, GetPlansSelfResponseDto>(
       new GetPlansSelfQuery(queryDto, userId),

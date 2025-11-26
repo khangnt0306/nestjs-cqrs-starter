@@ -41,4 +41,26 @@ export class DailySummary {
 
   @Column({ type: 'enum', enum: DailyStatus, default: DailyStatus.OK })
   status: DailyStatus;
+
+  // For FLEXIBLE items: average daily amount calculated
+  @Column({
+    type: 'decimal',
+    precision: 18,
+    scale: 2,
+    nullable: true,
+  })
+  flexibleAverageAmount?: string;
+
+  // For FLEXIBLE items: minimum threshold based on percentage
+  @Column({
+    type: 'decimal',
+    precision: 18,
+    scale: 2,
+    nullable: true,
+  })
+  flexibleMinimumThreshold?: string;
+
+  // Warning flag if actual amount is below minimum
+  @Column({ default: false })
+  isBelowMinimum: boolean;
 }

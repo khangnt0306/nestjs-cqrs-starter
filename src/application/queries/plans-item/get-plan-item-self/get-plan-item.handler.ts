@@ -5,6 +5,9 @@ import { PlanItemResponseDto } from '@shared/dtos/plansItem';
 import { PaginationResponseDto } from '@shared/dtos/pagination.dto';
 import { PlanItemRepository } from '@infrastructure/repositories/planItem.repository';
 import { PlanRepository } from '@infrastructure/repositories/plan.repository';
+import { PlanCalculationService } from '@shared/services/plan-calculation.service';
+import { createPlanItemResponseDto } from '@shared/utils/plan-item-response.helper';
+import { DailyTransactionRepository } from '@infrastructure/repositories/daily-transaction.repository';
 
 export class GetPlanItemsSelfResponseDto {
   planItems: PlanItemResponseDto[];
@@ -27,6 +30,8 @@ export class GetPlanItemsSelfHandler
   constructor(
     private readonly planItemRepository: PlanItemRepository,
     private readonly planRepository: PlanRepository,
+    private readonly planCalculationService: PlanCalculationService,
+    private readonly dailyTransactionRepository: DailyTransactionRepository,
   ) {}
 
   async execute(
@@ -52,8 +57,14 @@ export class GetPlanItemsSelfHandler
         textSearch,
       );
 
-    const planItemDtos = planItems.map(
-      (planItem) => new PlanItemResponseDto(planItem),
+    const planItemIds = planItems.map((item) => item.id);
+    const spentMap =
+      await this.dailyTransactionRepository.getTotalsByPlanItemIds(planItemIds);
+
+    const planItemDtos = planItems.map((planItem) =>
+      createPlanItemResponseDto(planItem, plan, this.planCalculationService, {
+        spentAmount: spentMap[planItem.id] ?? 0,
+      }),
     );
     const pagination = new PaginationResponseDto(total, skip, limit);
 

@@ -48,14 +48,10 @@ export class GetDailyTransactionByIdHandler
       id: dailyTransaction.id,
       planId: dailyTransaction.planId,
       planItemId: dailyTransaction.planItemId,
-      categoryId: dailyTransaction.categoryId,
-      type: dailyTransaction.type,
       date: dailyTransaction.date,
       label: dailyTransaction.label,
       amount: dailyTransaction.amount,
-      isDefaultGenerated: dailyTransaction.isDefaultGenerated,
       createdAt: dailyTransaction.createdAt,
     });
   }
 }
-

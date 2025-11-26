@@ -23,6 +23,27 @@ export class PlanItemResponseDto {
   @ApiProperty({ required: false })
   description?: string;
 
+  @ApiProperty({ required: false })
+  minimumPercentage?: number;
+
+  @ApiProperty({
+    required: false,
+    description:
+      'Tổng số tiền đã sử dụng (chỉ áp dụng cho chi tiêu loại linh hoạt)',
+  })
+  spentAmount?: number;
+  @ApiProperty({
+    required: false,
+    description: 'Số tiền tiết kiệm (budget còn lại) cho chi tiêu linh hoạt',
+  })
+  savedAmount?: number;
+  @ApiProperty({
+    required: false,
+    description:
+      'Số tiền trung bình hàng ngày (chỉ áp dụng cho chi tiêu loại linh hoạt)',
+  })
+  averageDaily?: number;
+
   @ApiProperty({ type: 'object', required: false })
   @IsOptional()
   @IsObject()

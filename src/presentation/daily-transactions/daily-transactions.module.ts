@@ -4,6 +4,10 @@ import { DailyTransactionsController } from './daily-transactions.controller';
 import { DailyTransactionRepository } from '@infrastructure/repositories/daily-transaction.repository';
 import { PlanItemRepository } from '@infrastructure/repositories/planItem.repository';
 import { PlanRepository } from '@infrastructure/repositories/plan.repository';
+import { DailySummaryRepository } from '@infrastructure/repositories/daily-summary.repository';
+import { PlanCalculationService } from '@shared/services/plan-calculation.service';
+import { DefaultTransactionAutoGeneratorService } from '@shared/services/default-transaction-auto-generator.service';
+import { DefaultTransactionRepository } from '@infrastructure/repositories/default-transaction.repository';
 
 // Command Handlers
 import {
@@ -36,10 +40,13 @@ const QueryHandlers = [
     DailyTransactionRepository,
     PlanItemRepository,
     PlanRepository,
+    DailySummaryRepository,
+    DefaultTransactionRepository,
+    PlanCalculationService,
+    DefaultTransactionAutoGeneratorService,
     ...CommandHandlers,
     ...QueryHandlers,
   ],
   exports: [DailyTransactionRepository],
 })
 export class DailyTransactionsModule {}
-

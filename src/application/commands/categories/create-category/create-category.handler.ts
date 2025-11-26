@@ -1,9 +1,17 @@
-import { Injectable, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  BadRequestException,
+  HttpStatus,
+  NotFoundException,
+} from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { CreateCategoryCommand } from './create-category.command';
 import { CategoryRepository } from '@infrastructure/repositories/category.repository';
 import { UserRepository } from '@infrastructure/repositories';
 import { CategoryResponseDto } from '@shared/dtos/categories';
+import { UserRole } from '@domain/entities/user/user.enum';
+import { buildHttpExceptionResponse } from '@shared/utils';
 
 @CommandHandler(CreateCategoryCommand)
 @Injectable()
@@ -22,25 +30,45 @@ export class CreateCategoryHandler
     const existingCategory = await this.categoryRepository.findByName(dto.name);
     if (existingCategory) {
       throw new ConflictException(
-        `Category with name "${dto.name}" already exists`,
+        buildHttpExceptionResponse(HttpStatus.CONFLICT, [
+          `Danh mục với tên "${dto.name}" đã tồn tại`,
+        ]),
       );
     }
 
     // Get user entity
     const user = await this.userRepository.findOne({ where: { id: userId } });
     if (!user) {
-      throw new Error('User not found');
+      throw new NotFoundException(
+        buildHttpExceptionResponse(HttpStatus.NOT_FOUND, [
+          'Người dùng không tồn tại',
+        ]),
+      );
+    }
+
+    // Validate: Only admin can create default categories
+    const isAdmin = user.role === UserRole.ADMIN;
+    const isDefault = dto.isDefault ?? false;
+
+    if (isDefault && !isAdmin) {
+      throw new BadRequestException(
+        buildHttpExceptionResponse(HttpStatus.BAD_REQUEST, [
+          'Chỉ admin mới có thể tạo danh mục mặc định',
+        ]),
+      );
     }
 
     // Create entity
+    // For default categories: userId can be null or admin id
+    // For self categories: userId = user id, isDefault = false
     const category = this.categoryRepository.create({
       name: dto.name,
       description: dto.description,
       status: dto.status,
       type: dto.type,
       Icon: dto.Icon,
-      isDefault: dto.isDefault ?? false,
-      userId: userId,
+      isDefault: isDefault,
+      userId: isDefault ? null : userId,
     });
 
     // Save to database

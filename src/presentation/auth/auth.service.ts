@@ -1,12 +1,13 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { CommandBus } from '@nestjs/cqrs';
 import * as bcrypt from 'bcrypt';
 import { UserRepository } from '@infrastructure/repositories';
 import { LoginDto, LoginResponseDto } from '@shared/dtos/auth';
-import { CreateUserDto, UserResponseDto } from '@shared/dtos/users';
-import { CreateUserCommand } from '@application/commands/users';
+import { RegisterUserDto, UserResponseDto } from '@shared/dtos/users';
+import { RegisterUserCommand } from '@application/commands/users';
 import { UserStatus } from '@domain/entities/user/user.enum';
+import { buildHttpExceptionResponse } from '@shared/utils';
 
 @Injectable()
 export class AuthService {
@@ -20,13 +21,21 @@ export class AuthService {
     const user = await this.userRepository.findByEmail(email);
 
     if (!user) {
-      return null;
+      throw new UnauthorizedException(
+        buildHttpExceptionResponse(HttpStatus.UNAUTHORIZED, [
+          'Người dùng không tồn tại',
+        ]),
+      );
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
-      return null;
+      throw new UnauthorizedException(
+        buildHttpExceptionResponse(HttpStatus.UNAUTHORIZED, [
+          'Mật khẩu không chính xác',
+        ]),
+      );
     }
 
     return {
@@ -42,12 +51,12 @@ export class AuthService {
   async login(loginDto: LoginDto): Promise<LoginResponseDto> {
     const user = await this.validateUser(loginDto.email, loginDto.password);
 
-    if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
-    }
-
     if (user.status !== UserStatus.ACTIVE) {
-      throw new UnauthorizedException('Account is not active');
+      throw new UnauthorizedException(
+        buildHttpExceptionResponse(HttpStatus.UNAUTHORIZED, [
+          'Tài khoản chưa được kích hoạt',
+        ]),
+      );
     }
 
     // Update last login
@@ -76,7 +85,7 @@ export class AuthService {
     };
   }
 
-  async register(createUserDto: CreateUserDto): Promise<UserResponseDto> {
-    return this.commandBus.execute(new CreateUserCommand(createUserDto));
+  async register(registerUserDto: RegisterUserDto): Promise<UserResponseDto> {
+    return this.commandBus.execute(new RegisterUserCommand(registerUserDto));
   }
 }

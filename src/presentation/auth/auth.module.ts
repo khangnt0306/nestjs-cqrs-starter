@@ -7,6 +7,7 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { UserRepository } from '@infrastructure/repositories';
+import { MailService } from '@infrastructure/mail';
 
 // Guards
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
@@ -16,7 +17,10 @@ import { OwnershipGuard } from './guards/ownership.guard';
 import { RolesGuard } from './guards/roles.guard';
 
 // Import handlers
-import { CreateUserHandler } from '@application/commands/users';
+import {
+  CreateUserHandler,
+  RegisterUserHandler,
+} from '@application/commands/users';
 
 @Global()
 @Module({
@@ -39,6 +43,8 @@ import { CreateUserHandler } from '@application/commands/users';
     JwtStrategy,
     UserRepository,
     CreateUserHandler,
+    RegisterUserHandler,
+    MailService,
     // Export guards để sử dụng global
     JwtAuthGuard,
     OwnerGuard,
@@ -48,6 +54,7 @@ import { CreateUserHandler } from '@application/commands/users';
   ],
   exports: [
     AuthService,
+    MailService,
     // Export guards để các module khác có thể sử dụng
     JwtAuthGuard,
     OwnerGuard,

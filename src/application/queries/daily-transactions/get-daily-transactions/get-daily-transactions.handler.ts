@@ -1,19 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { PaginationResponseDto } from '@shared/dtos/pagination.dto';
-import { DailyTransactionResponseDto } from '@shared/dtos/daily-transactions';
+import {
+  DailyTransactionResponseDto,
+  DailyTransactionsByDateDto,
+} from '@shared/dtos/daily-transactions';
 import { DailyTransactionRepository } from '@infrastructure/repositories/daily-transaction.repository';
 import { GetDailyTransactionsQuery } from './get-daily-transactions.query';
 
 export class GetDailyTransactionsResponseDto {
-  dailyTransactions: DailyTransactionResponseDto[];
+  days: DailyTransactionsByDateDto[];
   pagination: PaginationResponseDto;
 
   constructor(
-    dailyTransactions: DailyTransactionResponseDto[],
+    days: DailyTransactionsByDateDto[],
     pagination: PaginationResponseDto,
   ) {
-    this.dailyTransactions = dailyTransactions;
+    this.days = days;
     this.pagination = pagination;
   }
 }
@@ -49,21 +52,32 @@ export class GetDailyTransactionsHandler
           id: dt.id,
           planId: dt.planId,
           planItemId: dt.planItemId,
-          categoryId: dt.categoryId,
-          type: dt.type,
           date: dt.date,
           label: dt.label,
           amount: dt.amount,
-          isDefaultGenerated: dt.isDefaultGenerated,
           createdAt: dt.createdAt,
         }),
     );
+
+    const grouped: DailyTransactionsByDateDto[] = [];
+    const dateMap = new Map<string, DailyTransactionResponseDto[]>();
+
+    for (const dto of dailyTransactionDtos) {
+      let list = dateMap.get(dto.date);
+      if (!list) {
+        list = [];
+        dateMap.set(dto.date, list);
+        grouped.push(
+          new DailyTransactionsByDateDto({
+            date: dto.date,
+            transactions: list,
+          }),
+        );
+      }
+      list.push(dto);
+    }
     const pagination = new PaginationResponseDto(total, skip, limit);
 
-    return new GetDailyTransactionsResponseDto(
-      dailyTransactionDtos,
-      pagination,
-    );
+    return new GetDailyTransactionsResponseDto(grouped, pagination);
   }
 }
-

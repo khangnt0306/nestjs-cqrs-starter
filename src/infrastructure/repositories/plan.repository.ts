@@ -2,11 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { BaseRepository } from './base.repository';
 import { Plan } from '@domain/entities/plan/plan.entity';
-import { RepeatType } from '@domain/entities/plan/plan.enum';
+import { PlanType } from '@domain/entities/plan/plan.enum';
 
 export interface GetPlansFilter {
   name?: string;
-  repeatType?: RepeatType;
+  planType?: PlanType;
 }
 
 export interface PagingOptions {
@@ -22,6 +22,10 @@ export class PlanRepository extends BaseRepository<Plan> {
 
   async findByName(name: string): Promise<Plan | null> {
     return this.findOne({ where: { name } });
+  }
+
+  async findByPlanType(planType: PlanType): Promise<Plan[]> {
+    return this.find({ where: { planType } });
   }
 
   async getPlansWithFilters(
@@ -54,9 +58,9 @@ export class PlanRepository extends BaseRepository<Plan> {
       });
     }
 
-    if (filter.repeatType) {
-      qb = qb.andWhere('plan.repeatType = :repeatType', {
-        repeatType: filter.repeatType,
+    if (filter.planType) {
+      qb = qb.andWhere('plan.planType = :planType', {
+        planType: filter.planType,
       });
     }
 

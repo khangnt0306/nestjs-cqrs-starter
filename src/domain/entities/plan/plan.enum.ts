@@ -3,8 +3,9 @@ export enum PlanStatus {
   INACTIVE = 'INACTIVE',
 }
 
-export enum RepeatType {
-  NONE = 'none',
-  MONTHLY = 'monthly',
-  WEEKLY = 'weekly',
+export enum PlanType {
+  DAILY = 'DAILY',
+  WEEKLY = 'WEEKLY',
+  MONTHLY = 'MONTHLY',
+  YEARLY = 'YEARLY',
 }

@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, IsString, IsEnum } from 'class-validator';
-import { RepeatType } from '@domain/entities/plan/plan.enum';
+import { PlanType } from '@domain/entities/plan/plan.enum';
 import { PaginationDto } from '../pagination.dto';
 
 export class GetPlansFilterDto {
@@ -9,10 +9,10 @@ export class GetPlansFilterDto {
   @IsString()
   name?: string;
 
-  @ApiProperty({ enum: RepeatType, required: false })
+  @ApiProperty({ enum: PlanType, required: false })
   @IsOptional()
-  @IsEnum(RepeatType)
-  repeatType?: RepeatType;
+  @IsEnum(PlanType)
+  planType?: PlanType;
 }
 
 export class GetPlansQueryDto extends PaginationDto {

@@ -4,13 +4,13 @@ import {
   IsEnum,
   IsOptional,
   IsBoolean,
-  IsDateString,
   IsNumber,
   MinLength,
   MaxLength,
   Min,
+  Max,
 } from 'class-validator';
-import { RepeatType } from '@domain/entities/plan/plan.enum';
+import { PlanType } from '@domain/entities/plan/plan.enum';
 
 export class CreatePlanDto {
   @ApiProperty({ example: 'Sample Plan' })
@@ -19,43 +19,62 @@ export class CreatePlanDto {
   @MaxLength(150)
   name: string;
 
-  @ApiProperty({ example: '2024-01-01' })
-  @IsDateString()
-  startDate: string;
+  @ApiProperty({ example: 'VND' })
+  @IsString()
+  @MinLength(2)
+  @MaxLength(10)
+  currency: string;
 
-  @ApiProperty({ example: '2024-12-31' })
-  @IsDateString()
-  endDate: string;
+  @ApiProperty({ enum: PlanType, example: PlanType.MONTHLY })
+  @IsEnum(PlanType)
+  planType: PlanType;
 
-  @ApiProperty({
-    enum: RepeatType,
-    required: false,
-    default: RepeatType.NONE,
-  })
+  @ApiProperty({ required: false, default: false })
   @IsOptional()
-  @IsEnum(RepeatType)
-  repeatType?: RepeatType;
+  @IsBoolean()
+  autoRepeat?: boolean;
 
   @ApiProperty({ required: false, default: true })
   @IsOptional()
   @IsBoolean()
   autoAdjustEnabled?: boolean;
 
-  @ApiProperty({ required: false, example: 100.0 })
+  @ApiProperty({ required: false, example: 'Mô tả chi tiết cho kế hoạch' })
+  @IsOptional()
+  @IsString()
+  @MaxLength(500)
+  description?: string;
+
+  @ApiProperty({
+    required: false,
+    example: 10,
+    description: 'Tỷ lệ % tối thiểu mỗi ngày so với tổng ngân sách',
+  })
   @IsOptional()
   @IsNumber()
   @Min(0)
+  @Max(100)
   dailyMinLimit?: number;
 
-  @ApiProperty({ required: false, example: 500.0 })
+  @ApiProperty({
+    required: false,
+    example: 50,
+    description: 'Ngưỡng cảnh báo vàng (% so với tổng ngân sách)',
+  })
   @IsOptional()
   @IsNumber()
   @Min(0)
+  @Max(100)
   warnLevelYellow?: number;
 
-  @ApiProperty({ required: false, example: 1000.0 })
+  @ApiProperty({
+    required: false,
+    example: 80,
+    description: 'Ngưỡng cảnh báo đỏ (% so với tổng ngân sách)',
+  })
   @IsOptional()
   @IsNumber()
   @Min(0)
+  @Max(100)
   warnLevelRed?: number;
 }

@@ -54,6 +54,9 @@ export class PlanItem {
   @Column({ default: false })
   isDailyBased: boolean;
 
+  @Column({ type: 'decimal', precision: 5, scale: 2, nullable: true })
+  minimumPercentage?: number;
+
   @OneToMany(() => PlanItemDailyBreakdown, (b) => b.planItem, {
     cascade: ['insert', 'update', 'remove'],
   })

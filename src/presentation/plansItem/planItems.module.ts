@@ -4,6 +4,8 @@ import { PlanItemsController } from './planItems.controller';
 import { UserRepository } from '@infrastructure/repositories';
 import { PlanRepository } from '@infrastructure/repositories/plan.repository';
 import { PlanItemRepository } from '@infrastructure/repositories/planItem.repository';
+import { PlanCalculationService } from '@shared/services/plan-calculation.service';
+import { DailyTransactionRepository } from '@infrastructure/repositories/daily-transaction.repository';
 
 // Command Handlers
 import {
@@ -38,6 +40,8 @@ const QueryHandlers = [
     PlanItemRepository,
     PlanRepository,
     UserRepository,
+    PlanCalculationService,
+    DailyTransactionRepository,
     ...CommandHandlers,
     ...QueryHandlers,
   ],

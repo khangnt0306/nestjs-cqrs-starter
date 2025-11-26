@@ -31,13 +31,13 @@ export class GetCategoriesSelfHandler
     const { queryDto, userId } = query;
     const { skip = 0, limit = 10, textSearch, filter = {} } = queryDto;
 
-    // Filter categories by user ID
+    // Get categories: include both self-created and default categories
     const [categories, total] =
-      await this.categoryRepository.getCategoriesWithFilters(
+      await this.categoryRepository.getSelfCategoriesWithFilters(
         filter,
         { skip, limit },
         textSearch,
-        userId, // Pass userId to filter by user
+        userId,
       );
 
     const categoryDtos = categories.map(

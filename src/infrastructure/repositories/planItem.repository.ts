@@ -31,6 +31,16 @@ export class PlanItemRepository extends BaseRepository<PlanItem> {
     return this.findOne({ where: { id: planItemId, planId } });
   }
 
+  async calculateIncomeTotal(planId: string): Promise<number> {
+    const result = await this.createQueryBuilder('planItem')
+      .select('COALESCE(SUM(planItem.amount), 0)', 'total')
+      .where('planItem.planId = :planId', { planId })
+      .andWhere('planItem.type = :type', { type: PlanItemType.INCOME })
+      .getRawOne<{ total: string }>();
+
+    return Number(result?.total ?? 0);
+  }
+
   async getPlanItemsWithFilters(
     filter: GetPlanItemsFilter,
     paging: PagingOptions,

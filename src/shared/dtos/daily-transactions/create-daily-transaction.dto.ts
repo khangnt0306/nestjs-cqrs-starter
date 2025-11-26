@@ -1,14 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsString,
-  IsBoolean,
-  IsOptional,
-  IsEnum,
-  IsDateString,
-  MinLength,
-  MaxLength,
-} from 'class-validator';
-import { TransactionType } from '@domain/entities/daily-transaction/daily-transaction.entity';
+import { IsString, IsDateString, MinLength, MaxLength } from 'class-validator';
 
 export class CreateDailyTransactionDto {
   @ApiProperty({ example: 'Ăn sáng' })
@@ -27,18 +18,4 @@ export class CreateDailyTransactionDto {
   })
   @IsDateString()
   date: string;
-
-  @ApiProperty({ enum: TransactionType, example: TransactionType.EXPENSE })
-  @IsEnum(TransactionType)
-  type: TransactionType;
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsString()
-  categoryId?: string;
-
-  @ApiProperty({ example: false, required: false, default: false })
-  @IsOptional()
-  @IsBoolean()
-  isDefaultGenerated?: boolean;
 }

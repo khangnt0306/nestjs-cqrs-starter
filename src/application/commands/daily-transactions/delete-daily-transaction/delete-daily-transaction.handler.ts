@@ -1,8 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, HttpStatus } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { DeleteDailyTransactionCommand } from './delete-daily-transaction.command';
 import { DailyTransactionRepository } from '@infrastructure/repositories/daily-transaction.repository';
 import { PlanItemRepository } from '@infrastructure/repositories/planItem.repository';
+import { buildHttpExceptionResponse } from '@shared/utils';
 
 @CommandHandler(DeleteDailyTransactionCommand)
 @Injectable()
@@ -17,18 +18,18 @@ export class DeleteDailyTransactionHandler
   async execute(command: DeleteDailyTransactionCommand): Promise<void> {
     const { planId, planItemId, id } = command;
 
-    // Verify plan item exists and belongs to plan
     const planItem = await this.planItemRepository.findOneByIdAndPlan(
       planItemId,
       planId,
     );
     if (!planItem) {
       throw new NotFoundException(
-        `Plan item with ID "${planItemId}" not found in plan "${planId}"`,
+        buildHttpExceptionResponse(HttpStatus.NOT_FOUND, [
+          'Mục chi tiêu không tồn tại trong kế hoạch',
+        ]),
       );
     }
 
-    // Find daily transaction
     const dailyTransaction =
       await this.dailyTransactionRepository.findOneByIdAndPlanItem(
         id,
@@ -36,11 +37,12 @@ export class DeleteDailyTransactionHandler
       );
     if (!dailyTransaction) {
       throw new NotFoundException(
-        `Daily transaction with ID "${id}" not found`,
+        buildHttpExceptionResponse(HttpStatus.NOT_FOUND, [
+          'Giao dịch hằng ngày không tồn tại trong mục chi tiêu',
+        ]),
       );
     }
 
-    // Delete
     await this.dailyTransactionRepository.delete(id);
   }
 }

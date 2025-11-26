@@ -7,6 +7,8 @@ import {
   MaxLength,
   Min,
   IsEnum,
+  Max,
+  ValidateIf,
 } from 'class-validator';
 import {
   EXCLUDE_TYPE,
@@ -43,4 +45,21 @@ export class CreatePlanItemDto {
   @IsOptional()
   @IsString()
   categoryId?: string;
+
+  @ApiProperty({
+    required: false,
+    example: 20,
+    description:
+      'Tỷ lệ % tối thiểu so với số tiền trung bình hàng ngày (chỉ áp dụng cho chi tiêu loại linh hoạt)',
+  })
+  @ValidateIf(
+    (o) =>
+      o.excludeType === EXCLUDE_TYPE.FLEXIBLE &&
+      o.type === PlanItemType.EXPENSE,
+  )
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  @Max(100)
+  minimumPercentage?: number;
 }

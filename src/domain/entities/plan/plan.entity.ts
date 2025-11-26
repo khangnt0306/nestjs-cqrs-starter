@@ -9,7 +9,7 @@ import {
   OneToMany,
 } from 'typeorm';
 import { User } from '../user';
-import { RepeatType } from './plan.enum';
+import { PlanStatus, PlanType } from './plan.enum';
 import { PlanItem } from '../planItem/planItem.entity';
 import { DailyTransaction } from '../daily-transaction/daily-transaction.entity';
 import { DailySummary } from '../daily-summary/daily-summary.entity';
@@ -32,25 +32,34 @@ export class Plan {
   @Column()
   name: string;
 
-  @Column({ type: 'date' })
-  startDate: string;
+  @Column({ type: 'enum', enum: PlanType, default: PlanType.MONTHLY })
+  planType: PlanType;
 
-  @Column({ type: 'date' })
-  endDate: string;
-
-  @Column({ type: 'enum', enum: RepeatType, default: RepeatType.NONE })
-  repeatType: RepeatType;
+  @Column({ default: false })
+  autoRepeat: boolean;
 
   @Column({ default: true })
   autoAdjustEnabled: boolean;
 
-  @Column({ type: 'decimal', nullable: true })
+  @Column({ type: 'varchar', length: 500, nullable: true })
+  description?: string;
+
+  @Column({ type: 'varchar', length: 10, default: 'VND' })
+  currency: string;
+
+  @Column({ type: 'decimal', precision: 14, scale: 2, default: 0 })
+  totalBudget: number;
+
+  @Column({ type: 'enum', enum: PlanStatus, default: PlanStatus.INACTIVE })
+  status: PlanStatus;
+
+  @Column({ type: 'decimal', precision: 5, scale: 2, nullable: true })
   dailyMinLimit: number;
 
-  @Column({ type: 'decimal', nullable: true })
+  @Column({ type: 'decimal', precision: 5, scale: 2, nullable: true })
   warnLevelYellow: number;
 
-  @Column({ type: 'decimal', nullable: true })
+  @Column({ type: 'decimal', precision: 5, scale: 2, nullable: true })
   warnLevelRed: number;
 
   @OneToMany(() => DailyTransaction, (tx) => tx.plan, {
