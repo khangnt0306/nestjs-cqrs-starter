@@ -3,6 +3,7 @@ import {
   Get,
   Post,
   Put,
+  Patch,
   Delete,
   Body,
   Param,
@@ -28,11 +29,13 @@ import {
   UpdatePlanDto,
   GetPlansQueryDto,
   PlanResponseDto,
+  UpdatePlanStatusDto,
 } from '@shared/dtos/plans';
 import {
   CreatePlanCommand,
   UpdatePlanCommand,
   DeletePlanCommand,
+  UpdatePlanStatusCommand,
 } from '@application/commands/plans';
 import {
   GetPlanByIdQuery,
@@ -139,5 +142,23 @@ export class PlansController {
   })
   async remove(@Param('id') id: string) {
     return this.commandBus.execute(new DeletePlanCommand(id));
+  }
+
+  @Patch(':id/status')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update plan status' })
+  @ApiResponse({
+    status: 200,
+    description: 'Plan status updated successfully',
+    type: PlanResponseDto,
+  })
+  async updateStatus(
+    @Param('id') id: string,
+    @Body() updatePlanStatusDto: UpdatePlanStatusDto,
+  ) {
+    return this.commandBus.execute(
+      new UpdatePlanStatusCommand(id, updatePlanStatusDto.status),
+    );
   }
 }

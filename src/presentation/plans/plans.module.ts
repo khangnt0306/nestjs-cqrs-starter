@@ -11,6 +11,7 @@ import {
   CreatePlanHandler,
   UpdatePlanHandler,
   DeletePlanHandler,
+  UpdatePlanStatusHandler,
 } from '@application/commands/plans';
 
 // Query Handlers
@@ -24,6 +25,7 @@ const CommandHandlers = [
   CreatePlanHandler,
   UpdatePlanHandler,
   DeletePlanHandler,
+  UpdatePlanStatusHandler,
 ];
 
 const QueryHandlers = [

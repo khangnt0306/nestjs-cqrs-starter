@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PlanType } from '@domain/entities/plan/plan.enum';
+import { PlanItem } from '@app/domain/entities/planItem/planItem.entity';
+import { PlanItemType } from '@app/domain/entities/planItem/planItem.enum';
 
 @Injectable()
 export class PlanCalculationService {
@@ -150,5 +152,22 @@ export class PlanCalculationService {
       default:
         return 30;
     }
+  }
+  totalIncomeForPlanType(planItems: PlanItem[]): number {
+    return planItems.reduce((acc, item) => {
+      if (item.type === PlanItemType.INCOME) {
+        return acc + Number(item.amount);
+      }
+      return acc;
+    }, 0);
+  }
+
+  totalExpenseForPlanType(planItems: PlanItem[]): number {
+    return planItems.reduce((acc, item) => {
+      if (item.type === PlanItemType.EXPENSE) {
+        return acc + Number(item.amount);
+      }
+      return acc;
+    }, 0);
   }
 }

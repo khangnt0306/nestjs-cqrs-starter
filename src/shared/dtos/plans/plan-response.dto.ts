@@ -32,6 +32,10 @@ export class PlanResponseDto {
   @ApiProperty({ example: 1000000 })
   totalBudget: number;
 
+  totalIncome: number;
+
+  totalExpense: number;
+
   @ApiProperty({ enum: PlanStatus })
   status: PlanStatus;
 
